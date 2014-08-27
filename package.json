@@ -42,7 +42,11 @@
     "sinon": "^1.10.3"
   },
   "keywords": [
-    "gruntplugin", "travis", "matrix", "env", "build"
+    "gruntplugin",
+    "travis",
+    "matrix",
+    "env",
+    "build"
   ],
   "config": {
     "blanket": {
@@ -50,5 +54,9 @@
         "grunt-travis-matrix/tasks"
       ]
     }
+  },
+  "dependencies": {
+    "config-extend": "0.0.7",
+    "lodash": "^2.4.1"
   }
 }
