@@ -17,9 +17,6 @@ module.exports = function(grunt) {
           tasks: 'matrix:' + context[ target.match(/\{\{ ([^\s]+)/)[1] ]
         };
       }
-      console.log(_.template(target.test, context));
-      console.log(target.when.toString());
-      console.log(_.template(target.test, context) === target.when.toString());
       if (_.template(target.test, context) === target.when.toString()) memo = memo.concat(target.tasks);
       return memo;
     }, []);

@@ -1,7 +1,6 @@
 language: node_js
 before_install:
   - "export CODECLIMATE_REPO_TOKEN=a48bb114a4381e6c48d3d0700d9090578c326aedec45d9ad246aa07f3b8e4c7e"
-  - "export TRAVIS=1"
 install:
   - "npm install npm -g"
   - "npm install grunt-cli -g"

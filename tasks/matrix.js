@@ -6,6 +6,7 @@ module.exports = function(grunt) {
     var options = this.options();
     if (typeof options.cmd === 'string') {
       cp.exec(options.cmd, { cwd: options.cwd || '.' }, function(err, stdout, stderr) {
+        console.log(arguments);
         done();
       });
     } else {
