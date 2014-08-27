@@ -1,6 +1,6 @@
 {
   "name": "grunt-travis-matrix",
-  "description": "Run matrix-specific grunt tasks on travis",
+  "description": "Run matrix-specific scripts during travis builds",
   "version": "0.0.1",
   "homepage": "https://github.com/tandrewnichols/grunt-travis-matrix",
   "author": {
