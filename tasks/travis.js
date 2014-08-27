@@ -1,4 +1,5 @@
 var _ = require('lodash');
+_.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
 var extend = require('config-extend');
 
 module.exports = function(grunt) {
@@ -13,7 +14,7 @@ module.exports = function(grunt) {
         target = {
           test: target,
           when: true,
-          tasks: 'matrix:' + context[ target.match(/<%= ([^\s]+)/)[1] ]
+          tasks: 'matrix:' + context[ target.match(/\{\{ ([^\s]+)/)[1] ]
         };
       }
       if (_.template(target.test, context) === target.when.toString()) memo = memo.concat(target.tasks);

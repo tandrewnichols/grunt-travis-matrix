@@ -51,7 +51,7 @@ module.exports = function(grunt) {
       options: {
         targets: [
           {
-            test: '<%= version %>',
+            test: '{{ version }}',
             when: '0.10',
             tasks: ['mochacov:lcov', 'matrix:0.10']
           }
