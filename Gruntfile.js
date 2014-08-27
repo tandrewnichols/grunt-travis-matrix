@@ -47,10 +47,28 @@ module.exports = function(grunt) {
         src: ['test/helpers.coffee', 'test/**/*.coffee']
       }
     },
+    travis: {
+      options: {
+        targets: [
+          {
+            test: '<%= version %>',
+            when: '0.10',
+            tasks: ['mochacov:lcov', 'matrix:0.10']
+          }
+        ]
+      }
+    },
+    matrix: {
+      '0.10': {
+        options: {
+          cmd: 'codeclimate < coverage/coverage.lcov'
+        }
+      }
+    }
   });
   
   grunt.registerTask('mocha', ['mochaTest']);
   grunt.registerTask('default', ['jshint:all', 'mocha']);
   grunt.registerTask('coverage', ['mochacov:html']);
-  grunt.registerTask('travis', ['jshint:all', 'mocha', 'mochacov:lcov']);
+  grunt.registerTask('ci', ['jshint:all', 'mocha', 'travis']);
 };

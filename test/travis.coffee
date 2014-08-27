@@ -7,7 +7,7 @@ describe 'travis task', ->
     options: sinon.stub()
     data: {}
   Given -> @context.options.returns {}
-  Given -> @subject = sandbox '../tasks/travis', {}
+  Given -> @subject = require '../tasks/travis'
 
   When -> @subject @grunt
   And -> expect(@grunt.registerTask).to.have.been.calledWith 'travis', 'Watches the travis matrix to enqueue matrix-specific tasks', sinon.match.func
@@ -19,12 +19,30 @@ describe 'travis task', ->
       targets:
         test: '<%= FOO %>'
         when: 'bar'
-        task: 'matrix:foo'
+        tasks: 'matrix:foo'
 
     describe 'test passes', ->
       Given -> process.env.FOO = 'bar'
       When -> @task.apply @context, []
       Then -> expect(@grunt.task.run).to.have.been.calledWith ['matrix:foo']
+
+    describe 'test does not pass', ->
+      Given -> process.env.FOO = 'nope'
+      When -> @task.apply @context, []
+      Then -> expect(@grunt.task.run.called).to.be.false()
+
+  describe 'multiple tasks per target', ->
+    afterEach -> delete process.env.FOO
+    Given -> @context.options.returns
+      targets:
+        test: '<%= FOO %>'
+        when: 'bar'
+        tasks: ['matrix:foo', 'other:foo']
+
+    describe 'test passes', ->
+      Given -> process.env.FOO = 'bar'
+      When -> @task.apply @context, []
+      Then -> expect(@grunt.task.run).to.have.been.calledWith ['matrix:foo', 'other:foo']
 
     describe 'test does not pass', ->
       Given -> process.env.FOO = 'nope'
@@ -43,11 +61,11 @@ describe 'travis task', ->
         targets: [
           test: '<%= FOO %>'
           when: 'bar'
-          task: 'matrix:foo'
+          tasks: 'matrix:foo'
         ,
           test: '<%= version %>'
           when: '0.10'
-          task: 'matrix:v0.10'
+          tasks: 'matrix:v0.10'
         ]
       When -> @task.apply @context, []
       Then -> expect(@grunt.task.run).to.have.been.calledWith ['matrix:foo', 'matrix:v0.10']
@@ -59,11 +77,11 @@ describe 'travis task', ->
         targets: [
           test: '<%= FOO %>'
           when: 'bar'
-          task: 'matrix:foo'
+          tasks: 'matrix:foo'
         ,
           test: '<%= version %>'
           when: '0.10'
-          task: 'matrix:v0.10'
+          tasks: 'matrix:v0.10'
         ]
       When -> @task.apply @context, []
       Then -> expect(@grunt.task.run).to.have.been.calledWith ['matrix:foo']
@@ -75,11 +93,11 @@ describe 'travis task', ->
         targets: [
           test: '<%= FOO %>'
           when: 'bar'
-          task: 'matrix:foo'
+          tasks: 'matrix:foo'
         ,
           test: '<%= version %>'
           when: '0.10'
-          task: 'matrix:v0.10'
+          tasks: 'matrix:v0.10'
         ]
       When -> @task.apply @context, []
       Then -> expect(@grunt.task.run.called).to.be.false()
@@ -129,4 +147,3 @@ describe 'travis task', ->
         targets: ['<%= FOO == "bar" %>', '<%= version == "0.10" %>']
       When -> @task.apply @context, []
       Then -> expect(@grunt.task.run.called).to.be.false()
-

@@ -13,10 +13,10 @@ module.exports = function(grunt) {
         target = {
           test: target,
           when: true,
-          task: 'matrix:' + target.match(/<%= .* == '?"?([^'"\s]+)/)[1].toLowerCase()
+          tasks: 'matrix:' + context[ target.match(/<%= ([^\s]+)/)[1] ]
         };
       }
-      if (_.template(target.test, context) === target.when.toString()) memo.push(target.task);
+      if (_.template(target.test, context) === target.when.toString()) memo = memo.concat(target.tasks);
       return memo;
     }, []);
 
