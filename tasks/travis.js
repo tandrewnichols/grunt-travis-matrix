@@ -1,6 +1,7 @@
 var _ = require('lodash');
 _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
 var extend = require('config-extend');
+var list = require('listify');
 
 module.exports = function(grunt) {
   grunt.registerTask('travis', 'Watches the travis matrix to enqueue matrix-specific tasks', function() {
@@ -22,6 +23,7 @@ module.exports = function(grunt) {
     }, []);
 
     if (tasks.length) {
+      grunt.log.writeln('Queueing tasks ' + list(tasks));
       grunt.task.run(tasks);
     }
   });

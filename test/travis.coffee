@@ -3,6 +3,8 @@ describe 'travis task', ->
     registerTask: sinon.stub()
     task:
       run: sinon.stub()
+    log:
+      writeln: sinon.stub()
   Given -> @context =
     options: sinon.stub()
     data: {}
