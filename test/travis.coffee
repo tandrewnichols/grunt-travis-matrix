@@ -3,6 +3,8 @@ describe 'travis task', ->
     registerTask: sinon.stub()
     task:
       run: sinon.stub()
+    log:
+      writeln: sinon.stub()
   Given -> @context =
     options: sinon.stub()
     data: {}
@@ -17,7 +19,7 @@ describe 'travis task', ->
     afterEach -> delete process.env.FOO
     Given -> @context.options.returns
       targets:
-        test: '<%= FOO %>'
+        test: '{{ FOO }}'
         when: 'bar'
         tasks: 'matrix:foo'
 
@@ -35,7 +37,7 @@ describe 'travis task', ->
     afterEach -> delete process.env.FOO
     Given -> @context.options.returns
       targets:
-        test: '<%= FOO %>'
+        test: '{{ FOO }}'
         when: 'bar'
         tasks: ['matrix:foo', 'other:foo']
 
@@ -56,15 +58,15 @@ describe 'travis task', ->
 
     describe 'both pass', ->
       Given -> process.env.FOO = 'bar'
-      Given -> process.version = '0.10.30'
+      Given -> process.version = 'v0.10.30'
       Given -> @context.options.returns
         targets: [
-          test: '<%= FOO %>'
+          test: '{{ FOO }}'
           when: 'bar'
           tasks: 'matrix:foo'
         ,
-          test: '<%= version %>'
-          when: '0.10'
+          test: '{{ version }}'
+          when: 'v0.10'
           tasks: 'matrix:v0.10'
         ]
       When -> @task.apply @context, []
@@ -72,15 +74,15 @@ describe 'travis task', ->
 
     describe 'one passes', ->
       Given -> process.env.FOO = 'bar'
-      Given -> process.version = '0.8.30'
+      Given -> process.version = 'v0.8.30'
       Given -> @context.options.returns
         targets: [
-          test: '<%= FOO %>'
+          test: '{{ FOO }}'
           when: 'bar'
           tasks: 'matrix:foo'
         ,
-          test: '<%= version %>'
-          when: '0.10'
+          test: '{{ version }}'
+          when: 'v0.10'
           tasks: 'matrix:v0.10'
         ]
       When -> @task.apply @context, []
@@ -88,15 +90,15 @@ describe 'travis task', ->
 
     describe 'none passes', ->
       Given -> process.env.FOO = 'baz'
-      Given -> process.version = '0.8.30'
+      Given -> process.version = 'v0.8.30'
       Given -> @context.options.returns
         targets: [
-          test: '<%= FOO %>'
+          test: '{{ FOO }}'
           when: 'bar'
           tasks: 'matrix:foo'
         ,
-          test: '<%= version %>'
-          when: '0.10'
+          test: '{{ version }}'
+          when: 'v0.10'
           tasks: 'matrix:v0.10'
         ]
       When -> @task.apply @context, []
@@ -108,14 +110,14 @@ describe 'travis task', ->
     describe 'test passes', ->
       Given -> process.env.FOO = 'bar'
       Given -> @context.options.returns
-        targets: '<%= FOO == "bar" %>'
+        targets: '{{ FOO == "bar" }}'
       When -> @task.apply @context, []
       Then -> expect(@grunt.task.run).to.have.been.calledWith ['matrix:bar']
 
     describe 'test does not pass', ->
       Given -> process.env.FOO = 'baz'
       Given -> @context.options.returns
-        targets: '<%= FOO == "bar" %>'
+        targets: '{{ FOO == "bar" }}'
       When -> @task.apply @context, []
       Then -> expect(@grunt.task.run.called).to.be.false()
 
@@ -126,24 +128,24 @@ describe 'travis task', ->
     
     describe 'both pass', ->
       Given -> process.env.FOO = 'bar'
-      Given -> process.version = '0.10.30'
+      Given -> process.version = 'v0.10.30'
       Given -> @context.options.returns
-        targets: ['<%= FOO == "bar" %>', '<%= version == "0.10" %>']
+        targets: ['{{ FOO == "bar" }}', '{{ version == "v0.10" }}']
       When -> @task.apply @context, []
-      Then -> expect(@grunt.task.run).to.have.been.calledWith ['matrix:bar', 'matrix:0.10']
+      Then -> expect(@grunt.task.run).to.have.been.calledWith ['matrix:bar', 'matrix:v0.10']
 
     describe 'one passes', ->
       Given -> process.env.FOO = 'bar'
-      Given -> process.version = '0.8.30'
+      Given -> process.version = 'v0.8.30'
       Given -> @context.options.returns
-        targets: ['<%= FOO == "bar" %>', '<%= version == "0.10" %>']
+        targets: ['{{ FOO == "bar" }}', '{{ version == "v0.10" }}']
       When -> @task.apply @context, []
       Then -> expect(@grunt.task.run).to.have.been.calledWith ['matrix:bar']
 
     describe 'none pass', ->
       Given -> process.env.FOO = 'baz'
-      Given -> process.version = '0.8.30'
+      Given -> process.version = 'v0.8.30'
       Given -> @context.options.returns
-        targets: ['<%= FOO == "bar" %>', '<%= version == "0.10" %>']
+        targets: ['{{ FOO == "bar" }}', '{{ version == "v0.10" }}']
       When -> @task.apply @context, []
       Then -> expect(@grunt.task.run.called).to.be.false()

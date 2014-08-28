@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "config-extend": "0.0.7",
+    "listify": "^1.0.0",
     "lodash": "^2.4.1"
   }
 }

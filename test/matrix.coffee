@@ -3,6 +3,8 @@ EventEmitter = require('events').EventEmitter
 describe 'matrix task', ->
   Given -> @grunt =
     registerMultiTask: sinon.stub()
+    log:
+      writeln: sinon.stub()
   Given -> @context =
     async: sinon.stub()
     options: sinon.stub()

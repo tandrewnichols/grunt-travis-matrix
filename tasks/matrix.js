@@ -6,12 +6,25 @@ module.exports = function(grunt) {
     var options = this.options();
     if (typeof options.cmd === 'string') {
       cp.exec(options.cmd, { cwd: options.cwd || '.' }, function(err, stdout, stderr) {
+        if (err) grunt.log.writeln(err);
+        if (stdout) grunt.log.writeln(stdout);
+        if (stderr) grunt.log.writeln(stderr);
         done();
       });
     } else {
       var opts = { cwd: options.cwd || '.', stdio: 'inherit' };
       if (options.stdio === false) delete opts.stdio;
       var proc = cp.spawn(options.cmd.shift(), options.cmd, opts);
+      if (proc.stdout) {
+        proc.stdout.on('data', function(data) {
+          grunt.log.writeln(data.toString());
+        });
+      }
+      if (proc.stderr) {
+        proc.stderr.on('data', function(data) {
+          grunt.log.writeln(data.toString());
+        });
+      }
       proc.on('close', function(code) {
         done();
       });
