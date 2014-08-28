@@ -22,14 +22,14 @@ describe 'matrix task', ->
   And -> expect(@grunt.registerMultiTask).to.have.been.calledWith 'matrix', 'Tasks that run under the right travis matrix', sinon.match.func
   And -> @task = @grunt.registerMultiTask.getCall(0).args[2]
 
-  describe '"cmd" is string', ->
+  describe 'cmd is string', ->
     Given -> @cp.exec.withArgs('foo bar baz', { cwd: '.' }, sinon.match.func).callsArgWith 2, null, 'stdout', 'stderr'
     Given -> @context.options.returns
       cmd: 'foo bar baz'
     When -> @task.apply @context, []
     Then -> expect(@cb).to.have.been.called
 
-  describe '"cmd" is array', ->
+  describe 'cmd is array', ->
     Given -> @cp.spawn.withArgs('foo', ['bar', 'baz'], { stdio: 'inherit', cwd: '.' }).returns @emitter
     Given -> @context.options.returns
       cmd: ['foo', 'bar', 'baz']
@@ -37,6 +37,13 @@ describe 'matrix task', ->
       @task.apply @context, []
       @emitter.emit 'close', 0
     Then -> expect(@cb).to.have.been.called
+
+  describe 'cmd is function', ->
+    Given -> @func = sinon.stub()
+    Given -> @context.options.returns
+      cmd: @func
+    When -> @task.apply @context, []
+    Then -> expect(@func).to.have.been.calledWith @grunt, @context.options(), @cb
 
   describe 'cmd in task definition', ->
     describe 'cmd is string', ->
@@ -52,6 +59,12 @@ describe 'matrix task', ->
         @task.apply @context, []
         @emitter.emit 'close', 0
       Then -> expect(@cb).to.have.been.called
+
+    describe 'cmd is function', ->
+      Given -> @func = sinon.stub()
+      Given -> @context.data = @func
+      When -> @task.apply @context, []
+      Then -> expect(@func).to.have.been.calledWith @grunt, @context.options(), @cb
 
   describe 'additional options', ->
     describe 'cwd', ->
@@ -88,7 +101,7 @@ describe 'matrix task', ->
       And -> expect(@grunt.log.writeln).to.have.been.calledWith 'stdout'
       And -> expect(@grunt.log.writeln).to.have.been.calledWith 'stderr'
 
-    describe '"cmd" is array', ->
+    describe 'cmd is array', ->
       Given -> @cp.spawn.withArgs('foo', ['bar', 'baz'], { cwd: '.' }).returns @emitter
       Given -> @context.options.returns
         cmd: ['foo', 'bar', 'baz']

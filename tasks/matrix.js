@@ -14,6 +14,8 @@ module.exports = function(grunt) {
         if (stderr) grunt.log.writeln(stderr);
         done();
       });
+    } else if (typeof cmd === 'function') {
+      cmd(grunt, options, done);
     } else {
       var opts = { cwd: options.cwd || '.', stdio: options.stdio || 'inherit' };
       if (options.stdio === false) delete opts.stdio;

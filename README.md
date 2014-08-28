@@ -114,9 +114,11 @@ In this case the default task will be `matrix` (see below), and the target will 
 
 ## The "matrix" task
 
-Tasks you specify in the `travis` task do not have to be targets on the `matrix` task, but they can be. The `matrix` task is a way to run arbitrary bash commands as part of your build process (but only for certain matrix combinations). Currently, there are two ways to use this task (but more to come). You specify a `cmd` option as either a string or an array. If you pass a string, the matrix task will run `child_process.exec`; if you pass an array, it will use `child_process.spawn`. So it depends mostly on what you want to do. Keep in mind that exec has an output buffer restriction of 128KB, but also works "better" (read easier) for complicated bash expressions. Here's an example based on the above supposed `travis` task configuration:
+Tasks you specify in the `travis` task do not have to be targets on the `matrix` task, but they can be. The `matrix` task is a way to run arbitrary bash commands as part of your build process (but only for certain matrix combinations). You specify a `cmd` option as either a string, array, or function, or more simply, make the entire task target a string, array, or function. If you pass a string, the matrix task will run `child_process.exec`; if you pass an array, it will use `child_process.spawn`; if you pass a function, it will invoke the function with the grunt instance, options, and async callback as arguments. Keep in mind that exec has an output buffer restriction of 128KB, but also works "better" (read easier) for complicated bash expressions.
 
 ```javascript
+var aFunction = require('./some/lib').someFunc;
+
 grunt.initConfig({
   matrix: {
     bar: {
@@ -128,14 +130,34 @@ grunt.initConfig({
       options: {
         cmd: 'codeclimate < coverage/coverage.lcov'
       }
+    },
+    'v0.8': {
+      options: {
+        cmd: aFunction
+      }
     }
   }
 });
 ```
 
+or the simplified version:
+
+```javascript
+var aFunction = require('./some/lib').someFunc;
+
+grunt.initConfig({
+  matrix: {
+    bar: ['npm', 'config', 'set', 'author', 'Big Bird'],
+    'v0.10': 'codeclimate < coverage/coverage.lcov',
+    'v0.8': aFunction
+  }
+});
+```
+
+
 The codeclimate example is the reason I wrote this in the first place. I want to send test coverage reports, but why do it for every build in the matrix, when you only need it once?
 
-Besides these options, you can also pass `cwd` for either version and `stdio` for the spawn version (`exec` does not support `stdio`). The defaults are `'.'` and `'inherit'` respectively. If you want to simple turn `stdio` off (which you probably shouldn't want to do), you can pass `stdio: false`.
+Besides these options, you can also pass `force` and `cwd` for either version and `stdio` for the spawn version (`exec` does not support `stdio`). The defaults are `false`, `'.'` and `'inherit'` respectively. If you want to simple turn `stdio` off (which you probably shouldn't want to do), you can pass `stdio: false`. Setting `force: true` is like passing `--force` to a grunt invocation, but on a per target basis, if you have tasks that shouldn't halt the grunt chain.
 
 ```javascript
 grunt.initConfig({
