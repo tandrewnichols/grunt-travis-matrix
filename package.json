@@ -25,7 +25,8 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "publish": "publisher run"
   },
   "devDependencies": {
     "coffee-script": "^1.7.1",
