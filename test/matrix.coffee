@@ -38,6 +38,21 @@ describe 'matrix task', ->
       @emitter.emit 'close', 0
     Then -> expect(@cb).to.have.been.called
 
+  describe 'cmd in task definition', ->
+    describe 'cmd is string', ->
+      Given -> @cp.exec.withArgs('foo bar baz', { cwd: '.' }, sinon.match.func).callsArgWith 2, null, 'stdout', 'stderr'
+      Given -> @context.data = 'foo bar baz'
+      When -> @task.apply @context, []
+      Then -> expect(@cb).to.have.been.called
+
+    describe 'cmd is array', ->
+      Given -> @cp.spawn.withArgs('foo', ['bar', 'baz'], { stdio: 'inherit', cwd: '.' }).returns @emitter
+      Given -> @context.data = ['foo', 'bar', 'baz']
+      When ->
+        @task.apply @context, []
+        @emitter.emit 'close', 0
+      Then -> expect(@cb).to.have.been.called
+
   describe 'additional options', ->
     describe 'cwd', ->
       Given -> @cp.exec.withArgs('foo bar baz', { cwd: '..' }, sinon.match.func).callsArgWith 2, null, 'stdout', 'stderr'
@@ -73,12 +88,12 @@ describe 'matrix task', ->
       And -> expect(@grunt.log.writeln).to.have.been.calledWith 'stdout'
       And -> expect(@grunt.log.writeln).to.have.been.calledWith 'stderr'
 
-  describe '"cmd" is array', ->
-    Given -> @cp.spawn.withArgs('foo', ['bar', 'baz'], { cwd: '.' }).returns @emitter
-    Given -> @context.options.returns
-      cmd: ['foo', 'bar', 'baz']
-      stdio: false
-    When ->
-      @task.apply @context, []
-      @emitter.emit 'close', 0
-    Then -> expect(@cb).to.have.been.called
+    describe '"cmd" is array', ->
+      Given -> @cp.spawn.withArgs('foo', ['bar', 'baz'], { cwd: '.' }).returns @emitter
+      Given -> @context.options.returns
+        cmd: ['foo', 'bar', 'baz']
+        stdio: false
+      When ->
+        @task.apply @context, []
+        @emitter.emit 'close', 0
+      Then -> expect(@cb).to.have.been.called
