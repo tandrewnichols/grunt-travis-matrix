@@ -122,7 +122,6 @@ describe 'matrix task', ->
       When ->
         @task.apply @context, []
         @emitter.emit 'close', 2
-      And -> console.log(@grunt.log.writeln.getCall(0).args)
       Then -> expect(@cb).to.have.been.calledWith 0
       And -> expect(@grunt.log.writeln).to.have.been.calledWith 'matrix:foo returned code 2. Ignoring...'
 
