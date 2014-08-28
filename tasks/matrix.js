@@ -8,7 +8,7 @@ module.exports = function(grunt) {
     var cmd = options.cmd || this.data;
 
     if (typeof cmd === 'string') {
-      cp.exec(cmd, { cwd: options.cwd || '.' }, function(err, stdout, stderr) {
+      cp.exec(cmd, { cwd: options.cwd || process.cwd() }, function(err, stdout, stderr) {
         if (err) grunt.log.writeln(err);
         if (stdout) grunt.log.writeln(stdout);
         if (stderr) grunt.log.writeln(stderr);
@@ -17,7 +17,7 @@ module.exports = function(grunt) {
     } else if (typeof cmd === 'function') {
       cmd(grunt, options, done);
     } else {
-      var opts = { cwd: options.cwd || '.', stdio: options.stdio || 'inherit' };
+      var opts = { cwd: options.cwd || process.cwd(), stdio: options.stdio || 'inherit' };
       if (options.stdio === false) delete opts.stdio;
       var proc = cp.spawn(cmd.shift(), cmd, opts);
 
@@ -33,10 +33,14 @@ module.exports = function(grunt) {
         });
       }
 
-      proc.on('close', function(code) {
-        if (code) done(code);
-        else done();
-      });
+      proc.on('close', (function(context) {
+        return function(code) {
+          if (options.force && code) {
+            grunt.log.writeln('matrix:' + context.target + ' returned code ' + code + '. Ignoring...');
+            done(0);
+          } else done(code);
+        };
+      })(this));
     }
   });
 };
