@@ -59,11 +59,7 @@ module.exports = function(grunt) {
       }
     },
     matrix: {
-      'v0.10': {
-        options: {
-          cmd: 'codeclimate < coverage/coverage.lcov'
-        }
-      }
+      'v0.10': 'codeclimate < coverage/coverage.lcov'
     }
   });
   
