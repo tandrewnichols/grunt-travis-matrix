@@ -1,5 +1,5 @@
-var _ = require('lodash');
-_.templateSettings.interpolate = /\{\{([\s\S]+?)\}\}/g;
+var _ = require('lodash').runInContext();
+_.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
 var extend = require('config-extend');
 var list = require('listify');
 
