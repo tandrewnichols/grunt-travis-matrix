@@ -2,11 +2,10 @@
   "name": "grunt-travis-matrix",
   "description": "Run matrix-specific scripts during travis builds",
   "version": "0.0.4",
-  "homepage": "https://www.tandrewnichols.me/modules/grunt-travis-matrix",
   "author": {
     "name": "Andrew Nichols",
     "email": "tandrewnichols@gmail.com",
-    "url": "www.tandrewnichols.me"
+    "url": "http://www.tandrewnichols.me"
   },
   "repository": {
     "type": "git",
