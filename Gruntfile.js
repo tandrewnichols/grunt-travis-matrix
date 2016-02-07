@@ -58,7 +58,7 @@ module.exports = function(grunt) {
       }
     },
     exec: {
-      codeclimate: 'codeclimate-test-reporter < coverage/lcov.info'
+      codeclimate: 'codeclimate-test-reporter < coverage/coverage.lcov'
     }
   });
   
