@@ -2,6 +2,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-mocha-cov');
+  grunt.loadNpmTasks('grunt-exec');
   grunt.loadTasks('tasks');
 
   grunt.initConfig({
@@ -13,8 +14,9 @@ module.exports = function(grunt) {
         es3: true,
         indent: 2,
         newcap: true,
-        quotmark: 'single'
-      },
+        quotmark: 'single',
+        boss: true
+      }
     },
     mochacov: {
       lcov: {
@@ -22,49 +24,46 @@ module.exports = function(grunt) {
           reporter: 'mocha-lcov-reporter',
           instrument: true,
           ui: 'mocha-given',
-          require: 'coffee-script/register',
+          require: ['coffee-script/register', 'should', 'should-sinon'],
           output: 'coverage/coverage.lcov'
         },
-        src: ['test/helpers.coffee', 'test/**/*.coffee'],
+        src: ['test/**/*.coffee'],
       },
       html: {
         options: {
           reporter: 'html-cov',
           ui: 'mocha-given',
-          require: 'coffee-script/register',
+          require: ['coffee-script/register', 'should', 'should-sinon'],
           output: 'coverage/coverage.html'
         },
-        src: ['test/helpers.coffee', 'test/**/*.coffee']
+        src: ['test/**/*.coffee']
       }
     },
     mochaTest: {
       options: {
         reporter: 'spec',
         ui: 'mocha-given',
-        require: 'coffee-script/register'
+        require: ['coffee-script/register', 'should', 'should-sinon']
       },
       test: {
-        src: ['test/helpers.coffee', 'test/**/*.coffee']
+        src: ['test/**/*.coffee']
       }
     },
-    travis: {
-      options: {
-        targets: [
-          {
-            test: '{{ version }}',
-            when: 'v0.10',
-            tasks: ['mochacov:lcov', 'matrix:v0.10']
-          }
-        ]
+    travisMatrix: {
+      v4: {
+        test: function() {
+          return /^v4/.test(process.version);
+        },
+        tasks: ['mochacov:lcov', 'exec:codeclimate']
       }
     },
-    matrix: {
-      'v0.10': 'codeclimate < coverage/coverage.lcov'
+    exec: {
+      codeclimate: 'codeclimate-test-reporter < coverage/coverage.lcov'
     }
   });
   
   grunt.registerTask('mocha', ['mochaTest']);
   grunt.registerTask('default', ['jshint:all', 'mocha']);
   grunt.registerTask('coverage', ['mochacov:html']);
-  grunt.registerTask('ci', ['jshint:all', 'mocha', 'travis']);
+  grunt.registerTask('ci', ['jshint:all', 'mocha', 'travisMatrix:v4']);
 };
